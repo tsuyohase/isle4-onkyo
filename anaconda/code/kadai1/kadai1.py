@@ -70,7 +70,7 @@ SR = 16000 # サンプリングレート
 size_shift = 16000 / 100 # シフトサイズ
 
 # 音声ファイルを読み込む
-x, _ = librosa.load('aiueo.wav', sr =SR)
+x, _ = librosa.load('my_aiueo2.wav', sr =SR)
 
 # 音声ファイルの再生時間を求める
 duration = len(x) / SR
@@ -88,11 +88,11 @@ volume = []
 funfreq = []
 
 # 学習結果
-a_ave_set, a_dist_set = study(['a.wav'])
-i_ave_set, i_dist_set = study(['i.wav'])
-u_ave_set, u_dist_set = study(['u.wav'])
-e_ave_set, e_dist_set = study(['e.wav'])
-o_ave_set, o_dist_set = study(['o.wav'])
+a_ave_set, a_dist_set = study(['a3.wav'])
+i_ave_set, i_dist_set = study(['i3.wav'])
+u_ave_set, u_dist_set = study(['u3.wav'])
+e_ave_set, e_dist_set = study(['e3.wav'])
+o_ave_set, o_dist_set = study(['o3.wav'])
 
 # 識別格納用
 recognition = []
@@ -115,10 +115,10 @@ for i in np.arange(0, len(x) - size_frame, size_shift):
     
     # 基本周波数(自己相関による推定)
     autocorr = np.correlate(x_frame, x_frame, 'full') # 自己相関を求める
-    autocorr = autocorr [len(autocorr) // 2 :] # 前半は捨てる
+    autocorr = autocorr [len(autocorr) // 2 :] # 後半は捨てる
     peakindices = [i for i in range (len (autocorr)) if is_peak (autocorr, i)] #ピークを求める
     peakindices = [i for i in peakindices if i != 0] # 0が含まれていたら捨てる
-    max_peak_index = max(peakindices , key=lambda index: autocorr [index]) # 最大のピークを求める
+    max_peak_index = max(peakindices , key=lambda index: autocorr [index],default=2) # 最大のピークを求める
     ff = SR/max_peak_index # 逆数が基本周波数
     
     # ゼロ交差数
@@ -165,7 +165,7 @@ label = tkinter.Label(master = root, textvariable=text, font=("MS Gothic", 30))
 label.pack()
 
 # 再生するファイル名
-filename = 'aiueo.wav'
+filename = 'my_aiueo2.wav'
 
 # pydubを使用して音声ファイルを読み込む
 audio_data = AudioSegment.from_wav(filename)
@@ -261,14 +261,14 @@ def push1():
 button1 = tkinter.Button(root, text = '再生' , command = push1, font = ("MS Gothic", 60)).pack()
 
 # スペクトログラム、スペクトル、母音識別のグラフを作る
-frame1 = tkinter.Frame(root) #スペクトログラム
-frame2 =tkinter.Frame(root) #スペクトル
-frame3 =tkinter.Frame(root) #母音識別
+frame1 = tkinter.Frame(root) # スペクトログラム
+frame2 =tkinter.Frame(root) # スペクトル
+frame3 =tkinter.Frame(root) # 母音識別
 frame1.pack(side="left")
 frame2.pack(side="left")
 frame3.pack(side="left")
 
-#まずスペクトログラムについて
+# まずスペクトログラムについて
 fig, ax = plt.subplots()
 canvas = FigureCanvasTkAgg(fig, master = frame1)
 
